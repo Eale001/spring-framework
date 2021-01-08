@@ -31,6 +31,8 @@ import org.springframework.lang.Nullable;
  * @see ConfigurableBeanFactory
  * @see org.springframework.beans.factory.support.DefaultSingletonBeanRegistry
  * @see org.springframework.beans.factory.support.AbstractBeanFactory
+ *
+ * 定义对单例的注册以及获取
  */
 public interface SingletonBeanRegistry {
 
@@ -127,6 +129,7 @@ public interface SingletonBeanRegistry {
 
 	/**
 	 * Return the singleton mutex used by this registry (for external collaborators).
+	 * 返回此注册表使用的单例互斥锁(对于外部协作者)。
 	 * @return the mutex object (never {@code null})
 	 * @since 4.2
 	 */

@@ -114,6 +114,9 @@ import org.springframework.util.StringUtils;
  * @see #addBeanPostProcessor
  * @see #getBean
  * @see #resolveDependency
+ *
+ * 综合所有的功能，主要对bean注册后的处理
+ *
  */
 @SuppressWarnings("serial")
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory
@@ -134,53 +137,68 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 
-	/** Map from serialized id to factory instance. */
+	/** Map from serialized id to factory instance.
+	 *  从序列化id映射到工厂实例 */
 	private static final Map<String, Reference<DefaultListableBeanFactory>> serializableFactories =
 			new ConcurrentHashMap<>(8);
 
-	/** Optional id for this factory, for serialization purposes. */
+	/** Optional id for this factory, for serialization purposes.
+	 *  此工厂的可选id，用于序列化目的 */
 	@Nullable
 	private String serializationId;
 
-	/** Whether to allow re-registration of a different definition with the same name. */
+	/** Whether to allow re-registration of a different definition with the same name.
+	 *  是否允许相同名称的不同定义重新注册 */
 	private boolean allowBeanDefinitionOverriding = true;
 
-	/** Whether to allow eager class loading even for lazy-init beans. */
+	/** Whether to allow eager class loading even for lazy-init beans.
+	 *  是否允许即时类加载，即使是对于惰性初始化bean */
 	private boolean allowEagerClassLoading = true;
 
-	/** Optional OrderComparator for dependency Lists and arrays. */
+	/** Optional OrderComparator for dependency Lists and arrays.
+	 *  用于依赖列表和数组的可选OrderComparator*/
 	@Nullable
 	private Comparator<Object> dependencyComparator;
 
-	/** Resolver to use for checking if a bean definition is an autowire candidate. */
+	/** Resolver to use for checking if a bean definition is an autowire candidate.
+	 *  用于检查bean定义是否为自动装配候选对象的解析器*/
 	private AutowireCandidateResolver autowireCandidateResolver = new SimpleAutowireCandidateResolver();
 
-	/** Map from dependency type to corresponding autowired value. */
+	/** Map from dependency type to corresponding autowired value.
+	 *  从依赖类型映射到相应的自动装配值 */
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
 
-	/** Map of bean definition objects, keyed by bean name. */
+	/** Map of bean definition objects, keyed by bean name.
+	 *  bean定义对象的映射，按bean名称键 */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
-	/** Map from bean name to merged BeanDefinitionHolder. */
+	/** Map from bean name to merged BeanDefinitionHolder.
+	 *  从bean名称映射到合并的BeanDefinitionHolder */
 	private final Map<String, BeanDefinitionHolder> mergedBeanDefinitionHolders = new ConcurrentHashMap<>(256);
 
-	/** Map of singleton and non-singleton bean names, keyed by dependency type. */
+	/** Map of singleton and non-singleton bean names, keyed by dependency type.
+	 *  单例和非单例bean名称的映射，按依赖类型键 */
 	private final Map<Class<?>, String[]> allBeanNamesByType = new ConcurrentHashMap<>(64);
 
-	/** Map of singleton-only bean names, keyed by dependency type. */
+	/** Map of singleton-only bean names, keyed by dependency type.
+	 *  单例bean名称的映射，按依赖类型键*/
 	private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
-	/** List of bean definition names, in registration order. */
+	/** List of bean definition names, in registration order.
+	 *  按注册顺序排列的bean定义名称列表 */
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
-	/** List of names of manually registered singletons, in registration order. */
+	/** List of names of manually registered singletons, in registration order.
+	 *  手动注册的单例的名字列表，按注册顺序排列 */
 	private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
-	/** Cached array of bean definition names in case of frozen configuration. */
+	/** Cached array of bean definition names in case of frozen configuration.
+	 *  在配置冻结时缓存的bean定义名称数组 */
 	@Nullable
 	private volatile String[] frozenBeanDefinitionNames;
 
-	/** Whether bean definition metadata may be cached for all beans. */
+	/** Whether bean definition metadata may be cached for all beans.
+	 *  是否可以为所有bean缓存bean定义元数据 */
 	private volatile boolean configurationFrozen;
 
 
@@ -202,7 +220,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * Specify an id for serialization purposes, allowing this BeanFactory to be
-	 * deserialized from this id back into the BeanFactory object, if needed.
+	 * deserialized from this id back into the BeanFactory object, if needed
+	 * 为序列化目的指定一个id，允许此BeanFactory
+	 * 从这个id反序列化回BeanFactory对象(如果需要的话)。
 	 */
 	public void setSerializationId(@Nullable String serializationId) {
 		if (serializationId != null) {
@@ -217,6 +237,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/**
 	 * Return an id for serialization purposes, if specified, allowing this BeanFactory
 	 * to be deserialized from this id back into the BeanFactory object, if needed.
+	 * 如果指定了，则返回一个用于序列化目的的id，如果需要，允许将这个BeanFactory从这个id反序列化回BeanFactory对象。
 	 * @since 4.1.2
 	 */
 	@Nullable
@@ -229,6 +250,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * a different definition with the same name, automatically replacing the former.
 	 * If not, an exception will be thrown. This also applies to overriding aliases.
 	 * <p>Default is "true".
+	 *
+	 * 通过注册设置是否应该允许重写bean定义不同的定义具有相同的名称，自动替换前者。
+	 * 否则，将抛出异常。这也适用于重写别名。
+	 * < p >默认是“true”。
 	 * @see #registerBeanDefinition
 	 */
 	public void setAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
@@ -239,6 +264,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * Return whether it should be allowed to override bean definitions by registering
 	 * a different definition with the same name, automatically replacing the former.
 	 * @since 4.1.2
+	 *
+	 * 通过注册，返回是否应该允许重写bean定义
+	 * 不同的定义具有相同的名称，自动替换前者。
 	 */
 	public boolean isAllowBeanDefinitionOverriding() {
 		return this.allowBeanDefinitionOverriding;
@@ -253,6 +281,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * without resolved class name, instead of loading the bean classes on
 	 * demand just to perform a type check.
 	 * @see AbstractBeanDefinition#setLazyInit
+	 *
+	 * 设置是否允许工厂急切地装入bean类
+	 * 即使是标记为“lazy-init”的bean定义。
+	 * < p >默认为 “true”。
+	 * 关闭此标志以抑制类加载对于lazy-init bean，除非显式地请求这样的bean。
+	 * 特别地，按类型查找将简单地忽略bean定义没有解析的类名，而不是加载bean类只要求执行类型检查。
+	 *
 	 */
 	public void setAllowEagerClassLoading(boolean allowEagerClassLoading) {
 		this.allowEagerClassLoading = allowEagerClassLoading;
@@ -290,6 +325,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * Set a custom autowire candidate resolver for this BeanFactory to use
 	 * when deciding whether a bean definition should be considered as a
 	 * candidate for autowiring.
+	 * 为这个BeanFactory设置一个自定义自动装配候选解析器，以便在决定是否应该将bean定义视为自动装配的时候选解析器时使用。
 	 */
 	public void setAutowireCandidateResolver(AutowireCandidateResolver autowireCandidateResolver) {
 		Assert.notNull(autowireCandidateResolver, "AutowireCandidateResolver must not be null");

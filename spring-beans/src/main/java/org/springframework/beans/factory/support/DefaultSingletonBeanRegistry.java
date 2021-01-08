@@ -67,10 +67,14 @@ import org.springframework.util.StringUtils;
  * @see #registerDisposableBean
  * @see org.springframework.beans.factory.DisposableBean
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory
+ *
+ * 对接口 SingletonBeanRegistry 各函数的实现
+ *
  */
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
-	/** Maximum number of suppressed exceptions to preserve. */
+	/** Maximum number of suppressed exceptions to preserve.
+	 *  要保留的最大抑制异常数 */
 	private static final int SUPPRESSED_EXCEPTIONS_LIMIT = 100;
 
 
