@@ -81,6 +81,9 @@ import org.springframework.util.xml.DomUtils;
  * @since 2.0
  * @see ParserContext
  * @see DefaultBeanDefinitionDocumentReader
+ *
+ * 定义解析Element的各种方法
+ *
  */
 public class BeanDefinitionParserDelegate {
 
@@ -1485,9 +1488,11 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Get the namespace URI for the supplied node.
+	 * 获取所提供节点的namespaceURI。
 	 * <p>The default implementation uses {@link Node#getNamespaceURI}.
 	 * Subclasses may override the default implementation to provide a
 	 * different namespace identification mechanism.
+	 * 子类可以覆盖默认实现，以提供不同的名称空间标识机制。
 	 * @param node the node
 	 */
 	@Nullable
@@ -1528,6 +1533,7 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Determine whether the given node indicates the default namespace.
+	 * 确定给定的节点是否指示默认namespace。
 	 */
 	public boolean isDefaultNamespace(Node node) {
 		return isDefaultNamespace(getNamespaceURI(node));

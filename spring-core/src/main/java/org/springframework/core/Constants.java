@@ -55,6 +55,7 @@ public class Constants {
 
 	/**
 	 * Create a new Constants converter class wrapping the given class.
+	 * 创建一个新的常量转换器类来包装给定的类。
 	 * <p>All <b>public</b> static final variables will be exposed, whatever their type.
 	 * @param clazz the class to analyze
 	 * @throws IllegalArgumentException if the supplied {@code clazz} is {@code null}
