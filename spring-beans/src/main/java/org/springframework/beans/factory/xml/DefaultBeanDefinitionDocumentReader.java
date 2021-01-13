@@ -96,6 +96,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
 		this.readerContext = readerContext;
+		logger.info(" loading bean definitions ");
+		Element root = doc.getDocumentElement();
+		logger.info(" root : "+ root.getTagName());
 		doRegisterBeanDefinitions(doc.getDocumentElement());
 	}
 
@@ -128,16 +131,26 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// the new (child) delegate with a reference to the parent for fallback purposes,
 		// then ultimately reset this.delegate back to its original (parent) reference.
 		// this behavior emulates a stack of delegates without actually necessitating one.
+		// 任何嵌套的元素都会在此方法中导致递归。在缺省值-*
+		// 跟踪当前(父)委托，它可能为空。创建
+		// new (child) delegate with a reference to parent for callback，
+		// //最终将this.delegate重置为它的原始(父)引用。
+		// 这个行为模拟委托的堆栈，而实际上不需要一个
+
+		// 专门处理解析
 		BeanDefinitionParserDelegate parent = this.delegate;
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
+			// 处理 profile 属性
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
 						profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 				// We cannot use Profiles.of(...) since profile expressions are not supported
 				// in XML config. See SPR-12458 for details.
+				// 我们不能使用Profiles.of(…)，因为不支持profile表达式
+				// 在XML配置。请参见spring -12458。
 				if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipped XML bean definition file due to specified profiles [" + profileSpec +
@@ -148,8 +161,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
+		// 解析前，留给子类实现
 		preProcessXml(root);
+		// 解析并注册 BeanDefinition
 		parseBeanDefinitions(root, this.delegate);
+		// 解析后，留给子类实现
 		postProcessXml(root);
 
 		this.delegate = parent;
@@ -169,6 +185,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * @param root the DOM root element of the document
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+		// 对beans 的处理
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
@@ -176,9 +193,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
+						// 对 bean 的处理
+						// 对默认的处理 例如 <bean id = "test" class = "com.eale.example.TestBean"/>
 						parseDefaultElement(ele, delegate);
 					}
 					else {
+						// 对 bean 的处理
+						// 另一类就是自定义的  <tx:annotation-driven/>
+						// 对于自定义的  需要用户自定义实现一些接口及配置
 						delegate.parseCustomElement(ele);
 					}
 				}
