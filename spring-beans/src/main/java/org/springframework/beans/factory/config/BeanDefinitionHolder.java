@@ -36,6 +36,9 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.beans.factory.BeanNameAware
  * @see org.springframework.beans.factory.support.RootBeanDefinition
  * @see org.springframework.beans.factory.support.ChildBeanDefinition
+ *
+ * 带有名称和别名的bean定义的Holder。可以注册为内bean的占位符。
+ *
  */
 public class BeanDefinitionHolder implements BeanMetadataElement {
 

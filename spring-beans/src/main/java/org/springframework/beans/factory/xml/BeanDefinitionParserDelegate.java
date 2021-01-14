@@ -415,10 +415,13 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+		// 解析 id 属性
 		String id = ele.getAttribute(ID_ATTRIBUTE);
+		// 解析 name 属性
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
 
 		List<String> aliases = new ArrayList<>();
+		// 分隔name
 		if (StringUtils.hasLength(nameAttr)) {
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 			aliases.addAll(Arrays.asList(nameArr));
@@ -441,6 +444,7 @@ public class BeanDefinitionParserDelegate {
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {
 				try {
+					// 如果不存在 beanName 那么根据Spring中提供中提供的命名规则为当前bean生成对应的beanName
 					if (containingBean != null) {
 						beanName = BeanDefinitionReaderUtils.generateBeanName(
 								beanDefinition, this.readerContext.getRegistry(), true);
@@ -450,6 +454,7 @@ public class BeanDefinitionParserDelegate {
 						// Register an alias for the plain bean class name, if still possible,
 						// if the generator returned the class name plus a suffix.
 						// This is expected for Spring 1.2/2.0 backwards compatibility.
+						// 注册一个普通bean类名的别名，如果生成器返回类名和后缀，如果仍然可能的话。这是Spring 1.2/2.0的向后兼容性所期望的。
 						String beanClassName = beanDefinition.getBeanClassName();
 						if (beanClassName != null &&
 								beanName.startsWith(beanClassName) && beanName.length() > beanClassName.length() &&
@@ -498,6 +503,7 @@ public class BeanDefinitionParserDelegate {
 	/**
 	 * Parse the bean definition itself, without regard to name or aliases. May return
 	 * {@code null} if problems occurred during the parsing of the bean definition.
+	 * 解析bean定义本身，而不考虑名称或别名。如果在解析bean定义期间发生了问题，可以返回。
 	 */
 	@Nullable
 	public AbstractBeanDefinition parseBeanDefinitionElement(
