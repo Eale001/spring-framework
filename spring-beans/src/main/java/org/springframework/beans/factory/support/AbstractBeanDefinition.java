@@ -865,6 +865,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return information about methods to be overridden by the IoC
 	 * container. This will be empty if there are no method overrides.
+	 * 返回关于要由IoC容器重写的方法的信息。如果没有方法重写，此值将为空。
 	 * <p>Never returns {@code null}.
 	 */
 	public MethodOverrides getMethodOverrides() {
