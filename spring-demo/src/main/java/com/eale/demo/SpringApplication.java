@@ -27,6 +27,8 @@ public class SpringApplication {
 		String testBean1 = testBean.getTestBean();
 		System.out.println(testBean1);
 
+		System.out.println(System.getProperty("sun.boot.class.path"));
+
 	}
 
 
